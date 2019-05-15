@@ -39,21 +39,21 @@ services:
       - mysql
       - wordpress
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx
+  caddy:
+    image: abiosoft/caddy
+    container_name: caddy
+    restart: always
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - ./logs/nginx:/var/log/nginx
+      - ./Caddyfile:/etc/Caddyfile
+      - ./logs/caddy:/var/log/caddy
       - ./wordpress:/var/www/html
     depends_on:
       - wordpress
     networks:
       - 'front'
-    restart: always
 
 networks:
   front: {}

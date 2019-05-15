@@ -7,7 +7,7 @@ Ready to use Wordpress installations using the latest technologies
 
 * Starter: Basic Wordpress installation with the following stack
     * MariaDB
-    * Nginx
+    * Caddy Server
     * wp-cli
     * php7.3 fpm
 * Perf:
