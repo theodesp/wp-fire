@@ -1,0 +1,9 @@
+.env*
+.idea/
+certs/
+certs-data/
+logs/
+nginx/
+mysql/
+wordpress/
+!nginx/default*

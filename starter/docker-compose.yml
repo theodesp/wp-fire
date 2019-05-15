@@ -1,0 +1,60 @@
+version: '3.6'
+services:
+
+  wordpress:
+    image: wordpress:php7.3-fpm
+    container_name: wordpress
+    volumes:
+      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./wordpress:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    networks:
+      - 'front'
+      - 'back'
+    restart: always
+
+  mysql:
+    image: mariadb:latest
+    container_name: mysql
+    volumes:
+      - ./mysql:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - 'back'
+    restart: always
+
+  wpcli:
+    image: wordpress:cli
+    user: xfs
+    volumes:
+      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./wordpress:/var/www/html
+    networks:
+      - 'back'
+    depends_on:
+      - mysql
+      - wordpress
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+      - ./wordpress:/var/www/html
+    depends_on:
+      - wordpress
+    networks:
+      - 'front'
+    restart: always
+
+networks:
+  front: {}
+  back: {}
