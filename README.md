@@ -1,7 +1,7 @@
 wp-fire
 ---
 
-Ready to use Wordpress installations using the latest technologies
+Quick and easy to use Wordpress installations using the latest technologies
 
 ### Installations
 
@@ -10,8 +10,14 @@ Ready to use Wordpress installations using the latest technologies
     * Caddy Server
     * wp-cli
     * php7.3 fpm
+    
+* Terraform: Digital Ocean's Wordpress installation using terraform
 
 ### Tech Used
 
 * Docker
 * Docker-compose
+* Terraform
+
+## LICENSE
+MIT Theo Despoudis 2019
