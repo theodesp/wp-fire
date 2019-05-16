@@ -3,15 +3,13 @@ wp-fire
 
 Ready to use Wordpress installations using the latest technologies
 
-### Available Installations
+### Installations
 
 * Starter: Basic Wordpress installation with the following stack
     * MariaDB
     * Caddy Server
     * wp-cli
     * php7.3 fpm
-* Perf:
-
 
 ### Tech Used
 

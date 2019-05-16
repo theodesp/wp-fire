@@ -2,17 +2,9 @@
 root /var/www/html
 gzip
 fastcgi / wordpress:9000 php
-
-# Prevent malicious PHP uploads from running
-rewrite {
-	r /uploads\/(.*)\.php
-	to /
-}
-
 rewrite {
     if {path} not_match ^\/wp-admin
     to {path} {path}/ /index.php?_url={uri}
 }
-
 log /var/log/caddy/access.log
 errors /var/log/caddy/error.log
