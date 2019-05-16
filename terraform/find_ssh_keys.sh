@@ -4,7 +4,7 @@ set -eou pipefail
 
 if [[ -z "$DIGITALOCEAN_TOKEN" ]]
 then
-    echo "$DIGITALOCEAN_TOKEN Digital ocean is empty. Please provide it."
+    echo "$DIGITALOCEAN_TOKEN is empty. Please provide it."
     exit 1
 fi
 
