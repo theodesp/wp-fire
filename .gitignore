@@ -5,5 +5,13 @@ certs-data/
 logs/
 nginx/
 mysql/
-wordpress/
+site/
 !nginx/default*
+.DS_Store
+.vagrant
+*.sql
+site/
+node_modules
+*.retry
+.ip_address
+/logs

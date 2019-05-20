@@ -1,0 +1,35 @@
+---
+
+- name: get VM's IP Address
+  shell: VBoxControl --nologo guestproperty get /VirtualBox/GuestInfo/Net/1/V4/IP | cut -f2 -d' '
+  register: ip_addr
+
+- set_fact: site_addr={{ ip_addr.stdout }}
+
+- name: Get WordPress config salts
+  become: no
+  uri:
+    url: https://api.wordpress.org/secret-key/1.1/salt/
+    return_content: yes
+  register: wp_salts
+
+- name: Write Vagrant defaults to wp-config.php
+  template:
+    src: wp-config.php.j2
+    dest: '{{ wp_root }}/wp-config.php'
+
+- name: Make sure ~/.wp-cli directory exists
+  file:
+    path: '/home/{{ ansible_user }}/.wp-cli'
+    state: directory
+    mode: 0755
+    owner: vagrant
+    group: vagrant
+
+
+- name: Write wp-cli config
+  template:
+    src: wp-cli-config.yml.j2
+    dest: '/home/{{ ansible_user }}/.wp-cli/config.yml'
+    owner: vagrant
+    group: vagrant

@@ -1,0 +1,49 @@
+---
+
+- name: Make sure local WordPress directory exists
+  file:
+    path: '{{ wp_root }}'
+    state: directory
+    mode: 0755
+
+- name: Create download cache directory
+  become: no
+  file:
+    path: /tmp/wordpress-{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}
+    state: directory
+  register: wp_download_tmp
+
+- name: Clean remote WordPress Source directory
+  file:
+    path: /tmp/wordpress
+    state: absent
+  register: wp_src_dir
+
+- name: Create remote expansion directory
+  file:
+    path: '{{ wp_src_dir.path }}'
+    state: directory
+    mode: 0777
+
+- name: Download WordPress archive
+  become: no
+  get_url:
+    url: "{{ wp_download | default('https://wordpress.org/latest.zip', true) }}"
+    dest: '{{ wp_download_tmp.path }}/wordpress_archive.zip'
+  register: wp_archive
+
+- name: Extract WordPress archive on remote host
+  unarchive:
+    src: '{{ wp_archive.dest }}'
+    dest: '{{ wp_src_dir.path }}'
+  register: wp_files
+
+- name: 'Pull-sync fresh WordPress onto site directory'
+  synchronize:
+    src: '{{ wp_src_dir.path }}/wordpress/'
+    dest: '{{ wp_root }}/'
+
+- name: Get master WordPress .gitignore file (if there isn't one already)
+  get_url:
+    url: 'https://gist.githubusercontent.com/joemaller/4f7518e0d04a82a3ca16/raw/'
+    dest: '{{ wp_root }}/.gitignore'

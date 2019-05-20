@@ -1,0 +1,25 @@
+---
+
+- name: Create Database
+  mysql_db: name={{ wp_config.db_name }} state=present
+
+- name: Find MySQL dumpfiles
+  command: find /vagrant -maxdepth 5 -regextype posix-egrep -type d -regex ".*(plugins|vendor|node_modules|wp-admin|wp-includes)" -prune -o -name "*.sql" -print
+  register: dumpfiles
+
+- name: Found dumpfile
+  debug: "msg='Populating database from {{ dumpfiles.stdout_lines | first | relpath(\'/vagrant\')}}'"
+  when: dumpfiles.stdout_lines
+
+- name: Create a new database
+  mysql_db:
+    name={{ wp_config.db_name }}
+    state=present
+
+- name: Load dumpfile into the database
+  mysql_db:
+    name={{ wp_config.db_name }}
+    state=import
+    target={{ dumpfiles.stdout_lines | first }}
+  when: dumpfiles.stdout_lines
+

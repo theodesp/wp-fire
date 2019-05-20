@@ -1,0 +1,60 @@
+- hosts: all
+  become: 'yes'
+  roles:
+    - wordpress
+  vars_files:
+    - defaults/main.yml
+  pre_tasks:
+    - name: Install updates
+      apt:
+        update_cache: yes
+        cache_valid_time: 86400
+        autoclean: yes
+        autoremove: yes
+
+    - name: Load config overrides (if file exists)
+      include_vars: '{{ item }}'
+      with_first_found:
+        - ../config.yml
+        - defaults/main.yml
+
+    - name: Ensure site directory exists
+      file:
+        path: /vagrant/site
+        state: directory
+
+    - name: Ensure logs directory exists
+      file:
+        path: /vagrant/logs
+        state: directory
+
+    - name: Symlink XHProf display files into web root
+      file:
+        src: /var/www/lib/xhprof/xhprof-master
+        dest: '{{ web_root }}/xhprof'
+        state: link
+
+    - name: Make sure /etc/apache2/ssl exists
+      file:
+        path: /etc/apache2/ssl
+        state: directory
+
+    - name: Generate self-signed ssl cert
+      command: >-
+          openssl req -new -nodes -x509 -subj "/CN={{ site_name or 'basic-wordpress-vagrant' }}" -days 1000
+          -keyout /etc/apache2/ssl/basic-wp.key -out /etc/apache2/ssl/basic-wp.crt
+      when: use_ssl
+
+  tasks:
+    - name: Enable xDebug
+      command: phpenmod xdebug
+      when: enable_xdebug
+
+    - name: Disable xDebug
+      command: phpdismod xdebug
+      when: not enable_xdebug
+
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted
